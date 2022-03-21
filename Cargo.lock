@@ -77,7 +77,6 @@ name = "jp-lexer"
 version = "0.1.0"
 dependencies = [
  "chumsky",
- "jp-ast",
  "unicode-script",
 ]
 
