@@ -34,7 +34,7 @@ pub enum Token {
 
 pub fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char>> {
     let sokuon = one_of("ッっ").to(Token::Sokuon);
-    let odoriji = one_of("ヽゝ").to(Token::Sokuon);
+    let odoriji = one_of("ヽゝ").to(Token::Odoriji);
     let choonpu = just("ー").to(Token::Choonpu);
     let comma = just('、').to(Token::Comma);
     let space = just('　').to(Token::Space);
