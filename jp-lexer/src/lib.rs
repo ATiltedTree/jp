@@ -1,4 +1,3 @@
-#![feature(if_let_guard)]
 #![recursion_limit = "256"]
 
 use chumsky::prelude::*;
