@@ -61,7 +61,6 @@ pub struct Meaning {
     pub body: String,
 }
 
-
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Lang {

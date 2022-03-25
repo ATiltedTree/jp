@@ -6,7 +6,7 @@ pub enum Vowel {
     I,
     U,
     E,
-    O
+    O,
 }
 
 macro_rules! mora {
@@ -45,11 +45,11 @@ macro_rules! moras {
                 }
             }
         }
-        
+
         pub(crate) fn hiragana() -> impl Parser<char, Mora, Error = Simple<char>> {
             mora!($({$hira => $name})*)
         }
-        
+
         pub(crate) fn katakana() -> impl Parser<char, Mora, Error = Simple<char>> {
             mora!($({$kata => $name})*)
         }

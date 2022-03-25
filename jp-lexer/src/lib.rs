@@ -44,13 +44,13 @@ pub fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char>> {
         one_of("ャゃ").to(Yoon::Ya),
         one_of("ュゅ").to(Yoon::Yu),
         one_of("ョょ").to(Yoon::Yo),
-    )).map(Token::Yoon);
+    ))
+    .map(Token::Yoon);
     let hiragana = mora::hiragana().map(Token::Hiragana);
     let katakana = mora::katakana().map(Token::Katakana);
 
-    let kanji = filter(|x| {
-        unicode_script::Script::from(*x) == unicode_script::Script::Han
-    }).map(Token::Kanji);
+    let kanji = filter(|x| unicode_script::Script::from(*x) == unicode_script::Script::Han)
+        .map(Token::Kanji);
 
     let token = choice((
         sokuon,
@@ -65,8 +65,8 @@ pub fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char>> {
         hiragana,
         katakana,
         kanji,
-    )).or(any().map(Token::Other));
+    ))
+    .or(any().map(Token::Other));
 
     token.repeated().then_ignore(end())
 }
-
