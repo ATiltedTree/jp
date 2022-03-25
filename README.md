@@ -16,3 +16,7 @@ have all been very useful:
 
 - [KANJIDIC](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) for a
   dictionary of kanji characters with over 13,000 kanji.
+- [Hidden Japanese](https://hiddenjapanese.com) for detailed descriptions of
+  various concepts.
+- [Genetic Kanji](http://www.genetickanji.com) for a detailed guide on learning
+  kanji.
