@@ -1,72 +1,59 @@
-#![recursion_limit = "256"]
-
 use chumsky::prelude::*;
 
-mod mora;
-
-pub use mora::Mora;
-
-#[derive(Debug, Clone, Copy)]
-pub enum Yoon {
-    Ya,
-    Yu,
-    Yo,
-}
+use ast::Mora;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Token {
-    Sokuon,
-    Choonpu,
     Comma,
     FullStop,
-    Yoon(Yoon),
     Odoriji,
     QuoteOpen,
     QuoteClose,
+    ParenOpen,
+    ParenClose,
     Space,
+    Interpunct,
 
     Hiragana(Mora),
     Katakana(Mora),
-    Kanji(char),
-    Other(char),
+    Kanji(kanji::Kanji),
 }
 
 pub fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char>> {
-    let sokuon = one_of("ッっ").to(Token::Sokuon);
-    let odoriji = one_of("ヽゝ").to(Token::Odoriji);
-    let choonpu = just("ー").to(Token::Choonpu);
     let comma = just('、').to(Token::Comma);
     let space = just('　').to(Token::Space);
+    let interpunct = just('・').to(Token::Interpunct);
     let full_stop = just('。').to(Token::FullStop);
     let quote_open = one_of("「『").to(Token::QuoteOpen);
     let quote_close = one_of("」』").to(Token::QuoteClose);
-    let yoon = choice((
-        one_of("ャゃ").to(Yoon::Ya),
-        one_of("ュゅ").to(Yoon::Yu),
-        one_of("ョょ").to(Yoon::Yo),
-    ))
-    .map(Token::Yoon);
-    let hiragana = mora::hiragana().map(Token::Hiragana);
-    let katakana = mora::katakana().map(Token::Katakana);
+    let paren_open = just('（').to(Token::ParenOpen);
+    let paren_close = just('）').to(Token::ParenClose);
 
-    let kanji = filter(|x| unicode_script::Script::from(*x) == unicode_script::Script::Han)
-        .map(Token::Kanji);
+    let hiragana =
+        filter_map(|span, x: char| Mora::try_from_hiragana(x).map_err(|x| Simple::custom(span, x)))
+            .map(Token::Hiragana);
+
+    let katakana =
+        filter_map(|span, x: char| Mora::try_from_katakana(x).map_err(|x| Simple::custom(span, x)))
+            .map(Token::Katakana);
+
+    let kanji =
+        filter_map(|span, x: char| kanji::Kanji::try_from(x).map_err(|x| Simple::custom(span, x)))
+            .map(Token::Kanji);
 
     let token = choice((
-        sokuon,
-        odoriji,
-        choonpu,
         comma,
         space,
+        interpunct,
         full_stop,
         quote_open,
         quote_close,
-        yoon,
+        paren_open,
+        paren_close,
         hiragana,
         katakana,
         kanji,
-    ))
-    .or(any().map(Token::Other));
+    ));
 
     token.repeated().then_ignore(end())
 }

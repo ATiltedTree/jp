@@ -75,11 +75,15 @@ dependencies = [
 [[package]]
 name = "jp-kanji"
 version = "0.1.0"
+dependencies = [
+ "jp-ast",
+]
 
 [[package]]
 name = "jp-kanji-codegen"
 version = "0.1.0"
 dependencies = [
+ "jp-ast",
  "proc-macro2",
  "quick-xml",
  "quote",
@@ -91,6 +95,8 @@ name = "jp-lexer"
 version = "0.1.0"
 dependencies = [
  "chumsky",
+ "jp-ast",
+ "jp-kanji",
  "unicode-script",
 ]
 

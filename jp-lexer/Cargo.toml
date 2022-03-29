@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 chumsky = "*"
 unicode-script = "0.5"
+ast = { package = "jp-ast", path = "../jp-ast" }
+kanji = { package = "jp-kanji", path = "../jp-kanji" }

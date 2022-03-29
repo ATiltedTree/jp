@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 use std::io::BufRead;
 
 use chumsky::Parser;

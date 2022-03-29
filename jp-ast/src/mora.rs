@@ -1,4 +1,36 @@
-use chumsky::prelude::*;
+use thiserror::Error;
+
+#[derive(Debug, Clone, Copy)]
+pub enum Yoon {
+    Ya,
+    Yu,
+    Yo,
+}
+impl Yoon {
+    pub fn vowel(&self) -> Option<Vowel> {
+        match self {
+            Yoon::Ya => Some(Vowel::A),
+            Yoon::Yu => Some(Vowel::U),
+            Yoon::Yo => Some(Vowel::O),
+        }
+    }
+
+    pub fn hiragana_letter(&self) -> char {
+        match self {
+            Yoon::Ya => 'ゃ',
+            Yoon::Yu => 'ゅ',
+            Yoon::Yo => 'ょ',
+        }
+    }
+
+    pub fn katakana_letter(&self) -> char {
+        match self {
+            Yoon::Ya => 'ャ',
+            Yoon::Yu => 'ュ',
+            Yoon::Yo => 'ョ',
+        }
+    }
+}
 
 #[derive(Debug)]
 pub enum Vowel {
@@ -9,51 +41,74 @@ pub enum Vowel {
     O,
 }
 
-macro_rules! mora {
-    ({$hira:expr => $name:ident}) => {
-        just($hira).to(Mora::$name)
-    };
-    ({$hira:expr => $name:ident} $({$H:expr => $N:ident})*) => {
-        just($hira).to(Mora::$name).or(mora!($({$H => $N})*))
-    }
-}
+#[derive(Debug, Error)]
+#[error("'{0}' is not a known katakana character")]
+pub struct KatakanaError(char);
+
+#[derive(Debug, Error)]
+#[error("'{0}' is not a known hiragana character")]
+pub struct HiraganaError(char);
 
 macro_rules! moras {
-    ($($hira:literal | $kata:literal: $name:ident => { $vowel:expr, $consonant:expr }),+) => {
+    ($($hira:literal | $kata:literal: $name:ident => { $vowel:expr, $consonant:expr },)+) => {
         #[allow(non_camel_case_types)]
         #[derive(Debug, Clone, Copy)]
         pub enum Mora {
-            $($name),+
+            $($name,)+
+
+            Yoon(Yoon),
+            Choonpu,
         }
 
         impl Mora {
             pub fn vowel(&self) -> Option<Vowel> {
                 match self {
-                    $(Self::$name => $vowel),+
+                    $(Self::$name => $vowel,)+
+
+                    Self::Yoon(y) => y.vowel(),
+                    Self::Choonpu => None,
                 }
             }
 
             pub fn hiragana_letter(&self) -> char {
                 match self {
-                    $(Self::$name => $hira),+
+                    $(Self::$name => $hira,)+
+
+                    Self::Yoon(y) => y.hiragana_letter(),
+                    Self::Choonpu => unreachable!("choonpu do not have hiragana representations")
                 }
             }
 
             pub fn katakana_letter(&self) -> char {
                 match self {
-                    $(Self::$name => $kata),+
+                    $(Self::$name => $kata,)+
+
+                    Self::Yoon(y) => y.katakana_letter(),
+                    Self::Choonpu => 'ー'
+                }
+            }
+
+            pub fn try_from_hiragana(s: char) -> Result<Self, HiraganaError> {
+                match s {
+                    $($hira => Ok(Self::$name),)*
+                    'ゃ' => Ok(Self::Yoon(Yoon::Ya)),
+                    'ゅ' => Ok(Self::Yoon(Yoon::Yu)),
+                    'ょ' => Ok(Self::Yoon(Yoon::Yo)),
+                    _ => Err(HiraganaError(s))
+                }
+            }
+
+            pub fn try_from_katakana(s: char) -> Result<Self, KatakanaError> {
+                match s {
+                    $($kata => Ok(Self::$name),)*
+                    'ャ' => Ok(Self::Yoon(Yoon::Ya)),
+                    'ュ' => Ok(Self::Yoon(Yoon::Yu)),
+                    'ョ' => Ok(Self::Yoon(Yoon::Yo)),
+                    'ー' => Ok(Self::Choonpu),
+                    _ => Err(KatakanaError(s))
                 }
             }
         }
-
-        pub(crate) fn hiragana() -> impl Parser<char, Mora, Error = Simple<char>> {
-            mora!($({$hira => $name})*)
-        }
-
-        pub(crate) fn katakana() -> impl Parser<char, Mora, Error = Simple<char>> {
-            mora!($({$kata => $name})*)
-        }
-
     };
 }
 
@@ -135,5 +190,11 @@ moras! {
     'ぷ' | 'プ': PU => { Some(Vowel::U), Some(Consonant::P) },
     'ぺ' | 'ペ': PE => { Some(Vowel::E), Some(Consonant::P) },
     'ぽ' | 'ポ': PO => { Some(Vowel::O), Some(Consonant::P) },
-    'ん' | 'ン': N => { None, Some(Consonant::N) }
+    'ん' | 'ン': N => { None, Some(Consonant::N) },
+
+    'ゔ' | 'ヴ': VU => { Some(Vowel::U), Some(Consonant::V) },
+
+    'っ' | 'ッ': Sokuon => { None, None },
+    'ゝ' | 'ヽ': Odoriji => { None, None },
+    'ゞ' | 'ヾ': OdorijiDakuten => { None, None },
 }
