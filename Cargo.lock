@@ -69,15 +69,13 @@ dependencies = [
 name = "jp-ast"
 version = "0.1.0"
 dependencies = [
+ "jp-kanji",
  "thiserror",
 ]
 
 [[package]]
 name = "jp-kanji"
 version = "0.1.0"
-dependencies = [
- "jp-ast",
-]
 
 [[package]]
 name = "jp-kanji-codegen"
@@ -97,7 +95,6 @@ dependencies = [
  "chumsky",
  "jp-ast",
  "jp-kanji",
- "unicode-script",
 ]
 
 [[package]]
@@ -211,12 +208,6 @@ checksum = "2c9d3793400a45f954c52e73d068316d76b6f4e36977e3fcebb13a2721e80237"
 dependencies = [
  "crunchy",
 ]
-
-[[package]]
-name = "unicode-script"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58dd944fd05f2f0b5c674917aea8a4df6af84f2d8de3fe8d988b95d28fb8fb09"
 
 [[package]]
 name = "unicode-xid"
