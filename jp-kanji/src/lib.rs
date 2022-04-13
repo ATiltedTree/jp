@@ -1,5 +1,7 @@
 #![allow(confusable_idents)]
 
+use thiserror::Error;
+
 #[derive(Debug)]
 pub enum Grade {
     Kyoiku(u8),
@@ -8,16 +10,9 @@ pub enum Grade {
     JoyoJimeiyo,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
+#[error("'{0}' is not a known kanji character")]
 pub struct KanjiError(char);
-
-impl std::fmt::Display for KanjiError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "'{}' is not a known kanji character", self.0)
-    }
-}
-
-impl std::error::Error for KanjiError {}
 
 include!("gen.rs");
 

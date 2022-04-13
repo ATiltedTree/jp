@@ -76,6 +76,9 @@ dependencies = [
 [[package]]
 name = "jp-kanji"
 version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "jp-kanji-codegen"
