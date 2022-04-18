@@ -10,4 +10,4 @@ quick-xml = { version = "0.22.0", features = ["serde", "serialize"] }
 serde = { version = "1", features = ["derive"] }
 proc-macro2 = "1"
 quote = "1"
-ast = { package = "jp-ast", path = "../../jp-ast" }
+mora = { package = "jp-mora", path = "../../jp-mora" }

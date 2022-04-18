@@ -70,6 +70,7 @@ name = "jp-ast"
 version = "0.1.0"
 dependencies = [
  "jp-kanji",
+ "jp-mora",
  "thiserror",
 ]
 
@@ -77,6 +78,7 @@ dependencies = [
 name = "jp-kanji"
 version = "0.1.0"
 dependencies = [
+ "jp-mora",
  "thiserror",
 ]
 
@@ -84,7 +86,7 @@ dependencies = [
 name = "jp-kanji-codegen"
 version = "0.1.0"
 dependencies = [
- "jp-ast",
+ "jp-mora",
  "proc-macro2",
  "quick-xml",
  "quote",
@@ -96,8 +98,15 @@ name = "jp-lexer"
 version = "0.1.0"
 dependencies = [
  "chumsky",
- "jp-ast",
  "jp-kanji",
+ "jp-mora",
+]
+
+[[package]]
+name = "jp-mora"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
 ]
 
 [[package]]

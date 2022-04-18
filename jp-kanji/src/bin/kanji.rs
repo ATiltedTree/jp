@@ -8,7 +8,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("  Stroke Count: {}", kanji.stroke_count());
         println!("  On Readings:");
         for reading in kanji.on_readings() {
-            println!("    - {}", reading);
+            println!("    - {:?}", reading);
         }
         println!("  Kun Readings:");
         for reading in kanji.kun_readings() {

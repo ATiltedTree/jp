@@ -1,6 +1,6 @@
 use chumsky::prelude::*;
 
-use ast::Mora;
+use mora::Mora;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Token {

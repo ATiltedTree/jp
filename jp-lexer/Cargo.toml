@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 chumsky = "*"
-ast = { package = "jp-ast", path = "../jp-ast" }
+mora = { package = "jp-mora", path = "../jp-mora" }
 kanji = { package = "jp-kanji", path = "../jp-kanji" }

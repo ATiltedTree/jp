@@ -90,8 +90,20 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
             .iter()
             .filter_map(|x| match x.r_type {
                 kanjidic::ReadingType::JaOn => {
-                    let s = &x.body;
-                    Some(quote! {#s})
+                    let ret = x.body.chars().filter(|x| *x != '-').map(|c| {
+                        let c = mora::Mora::try_from_katakana(c).unwrap();
+                        match c {
+                            mora::Mora::Yoon(yoon) => {
+                                let i = quote::format_ident!("{}", format!("{:#?}", yoon));
+                                quote! { Mora::Yoon(mora::Yoon::#i) }
+                            }
+                            _ => {
+                                let i = quote::format_ident!("{}", format!("{:#?}", c));
+                                quote! { Mora::#i }
+                            }
+                        }
+                    });
+                    Some(quote! {&[#(#ret),*]})
                 }
                 _ => None,
             })
@@ -99,6 +111,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let def = quote::quote! {
+        use mora::Mora;
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         pub enum Kanji {
@@ -124,7 +137,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
 
-            pub fn on_readings(&self) -> &[&'static str] {
+            pub fn on_readings(&self) -> &[&[Mora]] {
                 match self {
                     #(Self::#literals => &[#(#on_reading),*]),*
                 }

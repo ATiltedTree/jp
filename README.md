@@ -15,7 +15,9 @@ Many thanks to the following projects and resources in no particular order. They
 have all been very useful:
 
 - [KANJIDIC](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) for a
-  dictionary of kanji characters with over 13,000 kanji.
+  dictionary with over 13,000 kanji.
+- [JMDIC](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project)
+  for a dictionary with over 190,000 words.
 - [Hidden Japanese](https://hiddenjapanese.com) for detailed descriptions of
   various concepts.
 - [Genetic Kanji](http://www.genetickanji.com) for a detailed guide on learning

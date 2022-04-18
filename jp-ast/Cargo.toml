@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 thiserror = "1"
 kanji = { package = "jp-kanji", path = "../jp-kanji" }
+mora = { package = "jp-mora", path = "../jp-mora" }
