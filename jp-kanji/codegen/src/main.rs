@@ -95,7 +95,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
                         match c {
                             mora::Mora::Yoon(yoon) => {
                                 let i = quote::format_ident!("{}", format!("{:#?}", yoon));
-                                quote! { Mora::Yoon(mora::Yoon::#i) }
+                                quote! { Mora::Yoon(Yoon::#i) }
                             }
                             _ => {
                                 let i = quote::format_ident!("{}", format!("{:#?}", c));
@@ -111,7 +111,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let def = quote::quote! {
-        use mora::Mora;
+        use mora::{Mora, Yoon};
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         pub enum Kanji {
