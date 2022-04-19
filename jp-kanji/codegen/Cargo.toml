@@ -11,3 +11,4 @@ serde = { version = "1", features = ["derive"] }
 proc-macro2 = "1"
 quote = "1"
 mora = { package = "jp-mora", path = "../../jp-mora" }
+thiserror = "1"

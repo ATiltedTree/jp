@@ -7,21 +7,28 @@
 
 mod kanjidic;
 
-use std::{fs::File, io::BufReader, path::PathBuf};
+use std::io;
 
 use quote::quote;
+use thiserror::Error;
 
-pub fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let file = std::env::args().nth(1).expect("No arg");
-    let file = PathBuf::from(file);
-    let file = File::open(file)?;
-    let file = BufReader::new(file);
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("Parsing error: {0}")]
+    XML(#[from] quick_xml::DeError),
+
+    #[error(transparent)]
+    IO(#[from] io::Error),
+}
+
+pub fn gen(reader: &mut impl io::Read, writer: &mut impl io::Write) -> Result<(), Error> {
+    let reader = io::BufReader::new(reader);
 
     eprint!("READING...");
 
     let it = std::time::Instant::now();
 
-    let parsed: kanjidic::Kanjidic = quick_xml::de::from_reader(file)?;
+    let parsed: kanjidic::Kanjidic = quick_xml::de::from_reader(reader)?;
     eprintln!(
         "  DONE! Took {:#?}",
         std::time::Instant::now().duration_since(it)
@@ -165,7 +172,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    println!("{}", def);
+    writeln!(writer, "{}", def)?;
 
     Ok(())
 }

@@ -8,3 +8,8 @@ edition = "2021"
 [dependencies]
 thiserror = "1"
 mora = { package = "jp-mora", path = "../jp-mora" }
+
+[build-dependencies]
+codegen = { package = "jp-kanji-codegen", path = "codegen" }
+ureq = "2.4"
+flate2 = "1"

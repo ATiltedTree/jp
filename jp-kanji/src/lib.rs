@@ -14,7 +14,7 @@ pub enum Grade {
 #[error("'{0}' is not a known kanji character")]
 pub struct KanjiError(char);
 
-include!("gen.rs");
+include!(concat!(env!("OUT_DIR"), "/gen.rs"));
 
 impl std::fmt::Display for Kanji {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

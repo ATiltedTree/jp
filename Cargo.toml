@@ -1,2 +1,7 @@
 [workspace]
-members = [ "jp-lexer", "jp-ast", "jp-kanji", "jp-kanji/codegen", "jp-mora" ]
+members = [
+  "jp-mora",
+  "jp-lexer",
+  "jp-ast",
+  "jp-kanji",
+]
