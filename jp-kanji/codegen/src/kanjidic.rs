@@ -2,7 +2,13 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Kanjidic {
+    pub header: Header,
     pub character: Vec<Character>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Header {
+    pub database_version: String,
 }
 
 #[derive(Debug, Deserialize)]

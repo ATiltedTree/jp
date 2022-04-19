@@ -117,8 +117,12 @@ pub fn gen(reader: &mut impl io::Read, writer: &mut impl io::Write) -> Result<()
             .collect::<Vec<_>>()
     });
 
+    let version = parsed.header.database_version;
+
     let def = quote::quote! {
         use mora::{Mora, Yoon};
+
+        pub const VERSION: &str = #version;
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         pub enum Kanji {
