@@ -80,8 +80,26 @@ pub fn gen(reader: &mut impl io::Read, writer: &mut impl io::Write) -> Result<()
             .iter()
             .filter_map(|x| match x.r_type {
                 kanjidic::ReadingType::JaKun => {
-                    let s = &x.body;
-                    Some(quote! {#s})
+                    let ret = x
+                        .body
+                        .chars()
+                        .filter(|x| *x != '.')
+                        .filter(|x| *x != '-')
+                        .map(|c| {
+                            let c = mora::Mora::try_from_hiragana(c)
+                                .unwrap_or_else(|_| mora::Mora::try_from_katakana(c).unwrap());
+                            match c {
+                                mora::Mora::Yoon(yoon) => {
+                                    let i = quote::format_ident!("{}", format!("{:#?}", yoon));
+                                    quote! { Mora::Yoon(Yoon::#i) }
+                                }
+                                _ => {
+                                    let i = quote::format_ident!("{}", format!("{:#?}", c));
+                                    quote! { Mora::#i }
+                                }
+                            }
+                        });
+                    Some(quote! {&[#(#ret),*]})
                 }
                 _ => None,
             })
@@ -142,7 +160,7 @@ pub fn gen(reader: &mut impl io::Read, writer: &mut impl io::Write) -> Result<()
                 }
             }
 
-            pub fn kun_readings(&self) -> &[&'static str] {
+            pub fn kun_readings(&self) -> &[&[Mora]] {
                 match self {
                     #(Self::#literals => &[#(#kun_reading),*]),*
                 }

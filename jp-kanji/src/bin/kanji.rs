@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         println!("  Kun Readings:");
         for reading in kanji.kun_readings() {
-            println!("    - {}", reading);
+            println!("    - {:?}", reading);
         }
     }
 
