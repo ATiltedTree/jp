@@ -1,33 +1,50 @@
 use chumsky::prelude::*;
 
+use kanji::Kanji;
 use mora::Mora;
 
-#[derive(Debug, Clone, Copy)]
-pub enum Token {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Quote {
+    Open,
+    Close,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Punctuation {
     Comma,
     FullStop,
-    Odoriji,
-    QuoteOpen,
-    QuoteClose,
-    ParenOpen,
-    ParenClose,
-    Space,
     Interpunct,
+    Space,
+    Ditto,
+    Spaceholder,
+    Quote(Quote),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Token {
+    Punctuation(Punctuation),
 
     Hiragana(Mora),
     Katakana(Mora),
-    Kanji(kanji::Kanji),
+    Kanji(Kanji),
+
+    // Catch all for unknown chars
+    Other(char),
 }
 
 pub fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char>> {
-    let comma = just('、').to(Token::Comma);
-    let space = just('　').to(Token::Space);
-    let interpunct = just('・').to(Token::Interpunct);
-    let full_stop = just('。').to(Token::FullStop);
-    let quote_open = one_of("「『").to(Token::QuoteOpen);
-    let quote_close = one_of("」』").to(Token::QuoteClose);
-    let paren_open = just('（').to(Token::ParenOpen);
-    let paren_close = just('）').to(Token::ParenClose);
+    let quote =
+        choice((just('「').to(Quote::Open), just('」').to(Quote::Close))).map(Punctuation::Quote);
+
+    let punctuation = choice((
+        just('、').to(Punctuation::Comma),
+        just('。').to(Punctuation::FullStop),
+        just('・').to(Punctuation::Interpunct),
+        just('〃').to(Punctuation::Ditto),
+        just('〇').to(Punctuation::Spaceholder),
+        quote,
+    ))
+    .map(Token::Punctuation);
 
     let hiragana =
         filter_map(|span, x: char| Mora::try_from_hiragana(x).map_err(|x| Simple::custom(span, x)))
@@ -37,23 +54,10 @@ pub fn lexer() -> impl Parser<char, Vec<Token>, Error = Simple<char>> {
         filter_map(|span, x: char| Mora::try_from_katakana(x).map_err(|x| Simple::custom(span, x)))
             .map(Token::Katakana);
 
-    let kanji =
-        filter_map(|span, x: char| kanji::Kanji::try_from(x).map_err(|x| Simple::custom(span, x)))
-            .map(Token::Kanji);
+    let kanji = filter_map(|span, x: char| Kanji::try_from(x).map_err(|x| Simple::custom(span, x)))
+        .map(Token::Kanji);
 
-    let token = choice((
-        comma,
-        space,
-        interpunct,
-        full_stop,
-        quote_open,
-        quote_close,
-        paren_open,
-        paren_close,
-        hiragana,
-        katakana,
-        kanji,
-    ));
+    let token = choice((punctuation, hiragana, katakana, kanji)).or(any().map(Token::Other));
 
     token.repeated().then_ignore(end())
 }
