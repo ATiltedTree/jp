@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Yoon {
     Ya,
     Yu,
@@ -52,7 +52,7 @@ pub struct HiraganaError(char);
 macro_rules! moras {
     ($($hira:literal | $kata:literal: $name:ident => { $vowel:expr, $consonant:expr },)+) => {
         #[allow(non_camel_case_types)]
-        #[derive(Debug, Clone, Copy)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         pub enum Mora {
             $($name,)+
 
